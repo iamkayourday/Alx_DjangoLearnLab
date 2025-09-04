@@ -9,10 +9,10 @@ from .models import *
 def book_list(request):
     books = Book.objects.all()
     context = {'books': books}
-    return render(request, 'list_books.html', context)
+    return render(request, 'relationship_app/list_books.html', context)
 
 # Class-based view that displays details for a specific library
 class LibraryDetailView(DetailView):
     model = Library
-    template_name = 'library_detail.html'
+    template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
