@@ -2,7 +2,7 @@
 from os import name
 from relationship_app.models import Book, Author, Library
 
-author_books = Book.objects.filter(authorn_ame="author_name")
+author_books = Book.objects.filter(author_name="author_name")
 
 
 # List all books in a library.
