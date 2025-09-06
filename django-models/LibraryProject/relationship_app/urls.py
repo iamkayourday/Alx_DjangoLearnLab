@@ -20,8 +20,8 @@ urlpatterns = [
     path('member-view/', member_view, name='member_view'),
 
     # Permission based Urls
-    path('add-book/', add_book, name='add_book'),
-    path('change-book/<int:pk>/', change_book, name='change_book'),
-    path('delete-book/<int:pk>/', delete_book, name='delete_book')
+    path('add_book/', add_book, name='add_book'),
+    path('edit_book/<int:pk>/', change_book, name='change_book'),
+    path('delete_book/<int:pk>/', delete_book, name='delete_book')
 
 ]
