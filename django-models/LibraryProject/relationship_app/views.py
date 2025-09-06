@@ -7,6 +7,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.shortcuts import render # Used to return an HTML response with a template.
+from django.contrib.auth.decorators import user_passes_test # A decorator that restricts access to views based on a custom test function.
 
 
 # Create your views here.
@@ -30,4 +32,31 @@ class RegisterView(CreateView):
     # form = UserCreationForm()
     success_url = reverse_lazy('login')
     template_name = 'relationship_app/register.html'
+
+
+# Role-checking functions
+def is_admin(user):
+    return user.is_authenticated and user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    return user.is_authenticated and user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.is_authenticated and user.userprofile.role == 'Member'
+
+# Role protected views using user_passes_test decorator
+# Admin
+@user_passes_test(is_admin)
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+# Librarian
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+# Member
+@user_passes_test(is_member)
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
 
