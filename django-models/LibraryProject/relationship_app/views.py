@@ -4,11 +4,13 @@ from .models import Library, Book
 # from .models import Library
 from django.views.generic.detail import DetailView
 from django.contrib.auth import login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.contrib.auth.forms import UserCreationForm # A built-in form for creating new users.
 from django.shortcuts import render # Used to return an HTML response with a template.
 from django.contrib.auth.decorators import user_passes_test # A decorator that restricts access to views based on a custom test function.
+from django.contrib.auth.decorators import permission_required # A decorator that restricts access to views based on user permissions.
+
 
 
 # Create your views here.
@@ -59,4 +61,11 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
+
+# @permission_required('relationship_app.can_add_book', raise_exception=True)
+# @permission_required('relationship_app.can_change_book', raise_exception=True)
+# @permission_required('relationship_app.can_delete_book', raise_exception=True)
+
+
 
