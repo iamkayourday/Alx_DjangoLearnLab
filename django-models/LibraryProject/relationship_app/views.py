@@ -64,8 +64,13 @@ def member_view(request):
 
 
 # @permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    pass
 # @permission_required('relationship_app.can_change_book', raise_exception=True)
+def change_book(request):
+    pass
 # @permission_required('relationship_app.can_delete_book', raise_exception=True)
-
+def delete_book(request):
+    pass
 
 
