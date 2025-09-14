@@ -1,8 +1,8 @@
+# models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 
-# Create your models here.
 # User Profile model
 class UserProfile(models.Model):
     ROLE_CHOICES = (
@@ -33,9 +33,10 @@ class Book(models.Model):
     
     class Meta:
         permissions = [
-            ("can_add_book", "Can add books"),
-            ("can_change_book", "Can change books"),
-            ("can_delete_book", "Can delete books"),
+            ("can_view", "Can view books"),
+            ("can_create", "Can create books"),
+            ("can_edit", "Can edit books"),
+            ("can_delete", "Can delete books"),
         ]
     
 # Library model
