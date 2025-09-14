@@ -20,12 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nmlv_4e^)_%&3s9aqx(=w8v^nl@u*e04kp3p3!_)7+9t_vxa_q'
+# Use environment variable for production
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-nmlv_4e^)_%&3s9aqx(=w8v^nl@u*e04kp3p3!_)7+9t_vxa_q')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DEBUG=False in production via environment variable
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+# Set allowed hosts for production
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -39,18 +42,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    
+    'csp',  # Content Security Policy middleware
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'csp.middleware.CSPMiddleware',  # CSP middleware for security headers
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # CSRF protection
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -93,6 +96,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,  # Enforce minimum password length
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -119,12 +125,45 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production static file serving
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# settings.py
+
+# Authentication settings
 LOGIN_REDIRECT_URL = '/books/'
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
+# Security Settings
+# ================
+
+# HTTPS Settings - Enable in production
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
+SESSION_COOKIE_SECURE = True  # Send session cookies only over HTTPS
+CSRF_COOKIE_SECURE = True     # Send CSRF cookies only over HTTPS
+
+# Browser Security Headers
+SECURE_BROWSER_XSS_FILTER = True  # Enable XSS filter in browsers
+X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking - DENY prevents any framing
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+
+# Content Security Policy (CSP)
+CSP_DEFAULT_SRC = ("'self'",)  # Only allow resources from same origin
+CSP_SCRIPT_SRC = ("'self'",)   # Only allow scripts from same origin
+CSP_STYLE_SRC = ("'self'",)    # Only allow styles from same origin
+CSP_IMG_SRC = ("'self'",)      # Only allow images from same origin
+CSP_FONT_SRC = ("'self'",)     # Only allow fonts from same origin
+CSP_OBJECT_SRC = ("'none'",)   # Disallow all plugins (Flash, etc.)
+CSP_BASE_URI = ("'none'",)     # Disallow base tag usage
+CSP_FRAME_ANCESTORS = ("'none'",)  # Disallow framing completely
+
+# Session security
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
+CSRF_COOKIE_HTTPONLY = True     # Prevent JavaScript access to CSRF cookie
+
+# For production, you would also set:
+# SECURE_HSTS_SECONDS = 31536000  # 1 year HSTS
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
