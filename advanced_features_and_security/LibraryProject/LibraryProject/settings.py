@@ -20,14 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Use environment variable for production
+# Use environment variable for production security
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-nmlv_4e^)_%&3s9aqx(=w8v^nl@u*e04kp3p3!_)7+9t_vxa_q')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Set DEBUG=False in production via environment variable
+# DEBUG should be False in production environment
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-# Set allowed hosts for production
+# Set allowed hosts for production - use environment variable in production
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
@@ -42,18 +42,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'csp',  # Content Security Policy middleware
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'csp.middleware.CSPMiddleware',  # CSP middleware for security headers
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',  # CSRF protection
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Clickjacking protection
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -97,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
         'OPTIONS': {
-            'min_length': 8,  # Enforce minimum password length
+            'min_length': 8,  # Enforce minimum password length for security
         }
     },
     {
@@ -136,34 +134,77 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/books/'
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
-# Security Settings
-# ================
+# =============================================================================
+# HTTPS AND SECURITY CONFIGURATION
+# =============================================================================
 
-# HTTPS Settings - Enable in production
+# HTTPS Settings
+# -----------------------------------------------------------------------------
+# SECURE_SSL_REDIRECT: Redirect all HTTP requests to HTTPS
+# Set to True in production environment using environment variable
 SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
-SESSION_COOKIE_SECURE = True  # Send session cookies only over HTTPS
-CSRF_COOKIE_SECURE = True     # Send CSRF cookies only over HTTPS
 
-# Browser Security Headers
-SECURE_BROWSER_XSS_FILTER = True  # Enable XSS filter in browsers
-X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking - DENY prevents any framing
-SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+# HTTP Strict Transport Security (HSTS)
+# -----------------------------------------------------------------------------
+# SECURE_HSTS_SECONDS: Time period for HSTS policy (1 year = 31536000 seconds)
+# Enable in production only - once enabled, cannot be easily disabled
+SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0'))
 
-# Content Security Policy (CSP)
-CSP_DEFAULT_SRC = ("'self'",)  # Only allow resources from same origin
-CSP_SCRIPT_SRC = ("'self'",)   # Only allow scripts from same origin
-CSP_STYLE_SRC = ("'self'",)    # Only allow styles from same origin
-CSP_IMG_SRC = ("'self'",)      # Only allow images from same origin
-CSP_FONT_SRC = ("'self'",)     # Only allow fonts from same origin
-CSP_OBJECT_SRC = ("'none'",)   # Disallow all plugins (Flash, etc.)
-CSP_BASE_URI = ("'none'",)     # Disallow base tag usage
-CSP_FRAME_ANCESTORS = ("'none'",)  # Disallow framing completely
+# SECURE_HSTS_INCLUDE_SUBDOMAINS: Apply HSTS to all subdomains
+# Only enable if all subdomains are served over HTTPS
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', 'False').lower() == 'true'
 
-# Session security
-SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
-CSRF_COOKIE_HTTPONLY = True     # Prevent JavaScript access to CSRF cookie
+# SECURE_HSTS_PRELOAD: Allow inclusion in browser preload lists
+# Only enable if you're sure you can maintain HTTPS forever
+SECURE_HSTS_PRELOAD = os.environ.get('SECURE_HSTS_PRELOAD', 'False').lower() == 'true'
 
-# For production, you would also set:
-# SECURE_HSTS_SECONDS = 31536000  # 1 year HSTS
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
+# Secure Cookies
+# -----------------------------------------------------------------------------
+# SESSION_COOKIE_SECURE: Only send session cookies over HTTPS
+SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+
+# CSRF_COOKIE_SECURE: Only send CSRF cookies over HTTPS
+CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'False').lower() == 'true'
+
+# Additional Security Headers
+# -----------------------------------------------------------------------------
+# X_FRAME_OPTIONS: Prevent clickjacking by denying framing
+# Options: 'DENY' (no framing), 'SAMEORIGIN' (same origin only), 'ALLOW-FROM uri'
+X_FRAME_OPTIONS = 'DENY'
+
+# SECURE_CONTENT_TYPE_NOSNIFF: Prevent MIME type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# SECURE_BROWSER_XSS_FILTER: Enable browser's XSS filter
+SECURE_BROWSER_XSS_FILTER = True
+
+# Additional security settings (recommended for production)
+# -----------------------------------------------------------------------------
+# SECURE_REFERRER_POLICY: Control Referer header
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Cookie settings for enhanced security
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookies
+CSRF_COOKIE_HTTPONLY = True     # Prevent JavaScript access to CSRF cookies
+
+# For production deployment, consider also setting:
+# USE_X_FORWARDED_HOST = True    # If behind a proxy
+# USE_X_FORWARDED_PORT = True    # If behind a proxy
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # If behind a proxy
+
+# Environment-specific settings
+# -----------------------------------------------------------------------------
+if DEBUG:
+    # Development settings - less restrictive for testing
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_HSTS_SECONDS = 0
+else:
+    # Production settings - enforce strict security
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
