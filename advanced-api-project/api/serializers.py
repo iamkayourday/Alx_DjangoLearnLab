@@ -13,8 +13,10 @@ class AuthorSerializer(serializers.ModelSerializer):
         
 
 class BookSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer(read_only=True, many=True)
-
+    author = AuthorSerializer(read_only=True)
+# Many=True removed because a book has one author, not many.
+# Many True is used when serializing a list of items
+# ["(many=True, read_only=True)"]
     class Meta:
         model = Book
         fields = [
