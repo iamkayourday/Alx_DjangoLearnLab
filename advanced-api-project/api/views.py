@@ -7,6 +7,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView,
 # from rest_framework import filters, generics
 # from django_filters import rest_framework
 # from rest_framework import generics
+# ["from django_filters import rest_framework", "from rest_framework import generics"]
 from rest_framework import filters
 
 # Create your views here.
