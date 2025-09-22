@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 # from django_filters.rest_framework import DjangoFilterBackend
 # from rest_framework import filters, generics
+# from django_filters import rest_framework
+# from rest_framework import generics
 from rest_framework import filters
 
 # Create your views here.
