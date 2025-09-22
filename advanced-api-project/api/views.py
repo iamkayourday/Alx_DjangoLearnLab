@@ -21,7 +21,7 @@ class CreateView(CreateAPIView):
     serializer_class = BookSerializer
 
 # For modifying an existing book.
-class pdateView(UpdateAPIView):
+class UpdateView(UpdateAPIView):
     model = Book.objects.all()
     serializer_class = BookSerializer
 
