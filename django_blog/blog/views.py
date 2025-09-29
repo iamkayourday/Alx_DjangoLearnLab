@@ -9,7 +9,7 @@ from django.views.generic import  ListView, DetailView, CreateView, UpdateView, 
 # Create your views here.
 class RegisterView(CreateView):
     form_class = CustomUserCreationForm
-    template_name = 'Register.html'
+    template_name = 'registration/Register.html'
     success_url = '/login/'
 
     def form_valid(self, form):
@@ -18,7 +18,7 @@ class RegisterView(CreateView):
         return redirect(self.get_success_url())
     
 class MyLoginView(LoginView):
-    template_name = 'Login.html'
+    template_name = 'registration/Login.html'
     redirect_authenticated_user = True
 
 
