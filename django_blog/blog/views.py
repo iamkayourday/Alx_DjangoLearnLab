@@ -3,13 +3,15 @@ from .models import Post
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView, LogoutView
 from .forms import PostForm, CustomUserCreationForm, ProfileForm
+from django.contrib.auth.decorators import login_required
+
 from django.views.generic import  ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
 # Create your views here.
 class RegisterView(CreateView):
     form_class = CustomUserCreationForm
-    template_name = 'registration/register.html'
+    template_name = 'blog/register.html'
     success_url = '/login/'
 
     def form_valid(self, form):
@@ -18,8 +20,20 @@ class RegisterView(CreateView):
         return redirect(self.get_success_url())
     
 class MyLoginView(LoginView):
-    template_name = 'registration/login.html'
+    template_name = 'blog/login.html'
     redirect_authenticated_user = True
+
+@login_required
+def profile(request):
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")
+    else:
+        form = ProfileForm(instance=request.user)
+    posts = Post.objects.filter(author=request.user).order_by('-published_date')  
+    return render(request, "blog/profile.html", {"form": form, "posts": posts})
 
 
 class MyLogoutView(LogoutView):
