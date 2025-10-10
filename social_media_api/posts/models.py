@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+# Post(models.Model)
 class Posts(models.Model):
     author = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
