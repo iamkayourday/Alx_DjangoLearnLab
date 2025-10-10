@@ -10,7 +10,7 @@ class Posts(models.Model):
 
     def __str__(self):
         return self.title
-    
+# Comment(models.Model)
 class Comments(models.Model):
     post = models.ForeignKey(Posts, related_name='comments', on_delete=models.CASCADE)
     author = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE)
